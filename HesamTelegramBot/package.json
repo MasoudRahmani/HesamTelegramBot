@@ -3,7 +3,21 @@
   "version": "0.0.0",
   "description": "HesamTelegramBot",
   "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "engines": {
+    "node": "14.x"
+  },
   "author": {
     "name": "Masoud Rahmani"
-  }
+  },
+  "dependencies": {
+    "telebot": "^1.4.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MasoudRahmani/HesamTelegramBot"
+  },
+  "license": "MIT"
 }
