@@ -1,19 +1,25 @@
 'use strict';
 /* -----------------  TEXT ----------------*/
-var person = { 'firstname': '','lastname': '', 'country': '', 'number': '', 'question': '' };
+class person {
+    constructor(id, username, name, country, number, ques) {
+        this._id = id; this._name = name || ''; this._country = country || '';
+        this._number = number || ''; this._question = ques || ''; this._user_telusername = username || '';
+    }
+};
+var persons = [];
 
 const welcome =
     "باسلام!\r\n\پیش از بیان پرسش خود، لطفا به چند سوال کوتاه پاسخ دهید و سپس پرسش خود را مطرح فرمایید.\r\n\
     همکاران ما در اسرع وقت پاسخگوی پرسش شما خواهند بود.\r\n\
     باتشکر";
-const firstnameQu = `نام؟`;
-const lastnameQu = `نام خانوادگی؟`;
-var countryQu = `سرکار آقای/خانم XXXX خوش آمدید. کشور کنونی در حال سکونت؟`;
-const numberQu = `لطفا شماره تماس خود را وارد فرمایید.`;
+const nameQu = `نام و نام خانوادگی؟`;
+const countryQu = `سرکار آقای/خانم XXXX خوش آمدید. کشور کنونی در حال سکونت؟`;
+const numberQu = `لطفا شماره همراه خود را بدون صفر وارد فرمایید.`;
 const wrongNumebr = `شماره همراه اشتباه می باشد، لطفا دوباره تلاش فرمایید.`;
 const finalEntry = `باتشکر، لطفا متن استفتا خود را مطرح نمایید.`;
 const doneText = 'در صورت اطمینان دکمه ی پایان را فشار دهید.\nدر غیر اینصورت دوباره مراحل را طی فرمایید.';
 const endButtonText = 'پایان';
+const startButtonText = 'شروع';
 /*---------------- Import ------------------*/
 const TeleBot = require('telebot');
 
@@ -35,57 +41,82 @@ const bot = new TeleBot({
     }
 })
 
-
+/* ------------------ Start -------------------- */
 bot.on('/start', msg => {
-    const id = msg.from.id;
-    msg.reply.text(welcome);
-    return bot.sendMessage(id, firstnameQu, { ask: 'lastname' });
+    let tmp_id = msg.from.id;
+    if (persons.findIndex(x => x._id == tmp_id) == -1) {
+        let p = new person(tmp_id);
+        persons.push(p);
+    }
+    let replyMarkup = bot.inlineKeyboard([
+        [
+            bot.inlineButton(startButtonText, { callback: 'start' })
+        ]
+    ]);
+    return bot.sendMessage(tmp_id, welcome, { replyMarkup });
 });
-bot.on('ask.lastname', msg => {
-    const id = msg.from.id;
-    person.firstname = msg.text;
-    return bot.sendMessage(id, lastnameQu, { ask: 'name' });
+bot.on('ask.start', msg => {
+    return bot.sendMessage(msg.from.id, nameQu, { ask: 'name' });
 });
+
 bot.on('ask.name', msg => {
-    const id = msg.from.id;
-    //_name = msg.text;
-    person.lastname = msg.text;
-    countryQu = countryQu.replace('XXXX', person.firstname + ' ' + person.lastname);
-    return bot.sendMessage(id, countryQu, { ask: 'country' });
+    let id = msg.from.id;
+    let pos = persons.findIndex(x => x._id == id);
+
+    persons[pos]._name = msg.text;
+
+    let tmp = countryQu.replace('XXXX', msg.text);
+    return bot.sendMessage(id, tmp, { ask: 'country' });
 });
 bot.on('ask.country', msg => {
-    const id = msg.from.id;
-    //_country = msg.text;
-    person.country = msg.text;
+    let id = msg.from.id;
+    let pos = persons.findIndex(x => x._id == id);
+    persons[pos]._country = msg.text;
+
     return bot.sendMessage(id, numberQu, { ask: 'number' });
 
 });
 bot.on('ask.number', msg => {
-    const id = msg.from.id;
-    //_number = msg.text;
-    person.number = msg.text;
-    if (!person.number)
+    let id = msg.from.id;
+    let tmp = msg.text;
+    //https://stackoverflow.com/questions/22378736/regex-for-mobile-number-validation/22378975
+    if (tmp.search(/^(\+\d{1,3}[- ]?)?\d{10}$/) == -1)
         return bot.sendMessage(id, wrongNumebr, { ask: 'number' });
-    else
+    else {
+        let pos = persons.findIndex(x => x._id == id);
+        persons[pos]._number = tmp;
         return bot.sendMessage(id, finalEntry, { ask: 'end' });
+    }
 
 });
 bot.on('ask.end', msg => {
-    //_question = msg.text;
-    person.question = msg.text;
-    const replyMarkup = bot.inlineKeyboard([
+    let id = msg.from.id;
+    let pos = persons.findIndex(x => x._id == id);
+    persons[pos]._question = msg.text;
+    persons[pos]._user_telusername = msg.from.username;
+
+    let replyMarkup = bot.inlineKeyboard([
         [
             bot.inlineButton(endButtonText, { callback: 'done' })
         ]
     ]);
-    return bot.sendMessage(msg.from.id, doneText, { replyMarkup });
+    return bot.sendMessage(id, doneText, { replyMarkup });
 
 });
-//ارسال داده ی نهایی برای ادمین
+
 bot.on('callbackQuery', (msg) => {
-    console.log('callbackQuery data:', person);
-
+    if (msg.data == 'start') {
+        let id = msg.from.id;
+        return bot.sendMessage(id, nameQu, { ask: 'name' });
+    }
+    else
+    //ارسال داده ی نهایی برای ادمین
+    {
+        console.log('callbackQuery data:', persons);
+    }
 });
+
+
 
 
 bot.start();
