@@ -1,0 +1,9 @@
+{
+  "name": "hesam-telegram-bot",
+  "version": "0.0.0",
+  "description": "HesamTelegramBot",
+  "main": "app.js",
+  "author": {
+    "name": "Masoud Rahmani"
+  }
+}
