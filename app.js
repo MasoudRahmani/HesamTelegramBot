@@ -130,7 +130,7 @@ bot.on('callbackQuery', (msg) => {
     {
         let pos = persons.findIndex(x => x._id == id);
         bot.sendMessage(adminId, `\
-        TelegramID: @${persons[pos]._user_telusername} \n\
+        TelegramID: @${typeof persons[pos]._user_telusername != 'undefined' ? persons[pos]._user_telusername : ' ندارد '} \n\
         Name:    ${persons[pos]._name} \n\
         Country:    ${persons[pos]._country} \n\
         Number:    ${persons[pos]._number} \n\
