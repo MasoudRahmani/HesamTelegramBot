@@ -28,7 +28,7 @@ const TeleBot = require('telebot');
 
 /*---------------- Main ---------------------*/
 const bot = new TeleBot({
-    token: '',
+    token: process.env.TelToken, //heroku config env
 
     polling: {
         interval: 500,
