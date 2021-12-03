@@ -29,7 +29,7 @@ const TeleBot = require('telebot');
 /*---------------- Main ---------------------*/
 const bot = new TeleBot({
     token: process.env.TelToken, //heroku config env
-
+    
     polling: {
         interval: 500,
         limit: 100,
@@ -106,20 +106,25 @@ bot.on('ask.end', msg => {
     return bot.sendMessage(id, doneText, { replyMarkup });
 
 });
-
+const adminId = '-1001532265592';
 bot.on('callbackQuery', (msg) => {
+    let id = msg.from.id;
     if (msg.data == 'start') {
-        let id = msg.from.id;
         return bot.sendMessage(id, nameQu, { ask: 'name' });
     }
     else
     //ارسال داده ی نهایی برای ادمین
     {
-        console.log('callbackQuery data:', persons);
+        let pos = persons.findIndex(x => x._id == id);
+        bot.sendMessage(adminId, `\
+        TelegramID: @${persons[pos]._user_telusername} \n\
+        Name:    ${persons[pos]._name} \n\
+        Country:    ${persons[pos]._country} \n\
+        Number:    ${persons[pos]._number} \n\
+        Question:    ${persons[pos]._question}`);
+
     }
 });
-
-
 
 bot.on('/help', msg => {
     msg.reply.text(help);
