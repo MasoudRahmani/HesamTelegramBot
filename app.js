@@ -1,4 +1,9 @@
 'use strict';
+/*-------------- heroku port --------------*/
+const http = require('http');
+const server = http.createServer( (rq,rs)=>{ rs.writeHead(200); rs.end('we have nothing here. Bot');} );
+server.listen(process.env.PORT || 5000);
+
 /* -----------------  TEXT ----------------*/
 class person {
     constructor(id, username, name, country, number, ques) {
