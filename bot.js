@@ -13,7 +13,7 @@ class _bot {
     #bot;
     #adminID;
     #tl;
-    commands = { start: '/start', help: '/help' };
+    commands = { start: '/start', help: '/help', lang: '/language' };
 
     constructor(token, admin, TL_provider) {
         this.#token = token;
@@ -47,27 +47,63 @@ class _bot {
             ]);
             return this.#bot.sendMessage(tmp_id, this.#tl.translate('Welcome'), { replyMarkup });
         });
+        this.#bot.on(this.commands.lang, msg => {
+            let tmp_id = msg.from.id;
+
+            let replyMarkup = this.#bot.inlineKeyboard([
+                [
+                    this.#bot.inlineButton(this.#tl.translate('En'), { callback: 'En' })
+                ],
+                [
+                    this.#bot.inlineButton(this.#tl.translate('Fa'), { callback: 'Fa' })
+                ],
+                [
+                    this.#bot.inlineButton(this.#tl.translate('Ar'), { callback: 'Ar' })
+                ]
+            ]);
+            return this.#bot.sendMessage(tmp_id, this.#tl.translate('Lang'), { replyMarkup });
+        });
         this.#bot.on('callbackQuery', (msg) => {
             let id = msg.from.id;
-            if (msg.data == 'start') {
-                return this.#bot.sendMessage(id, this.#tl.translate('Name?'), { ask: 'name' });
-            }
-            else
-            //ارسال داده ی نهایی برای ادمین
-            {
-                let pos = this.#ppl.findIndex(x => x._id == id);
-                this.#bot.sendMessage(this.#adminID, `\
-                TelegramID: @${typeof this.#ppl[pos]._user_telusername != 'undefined' ? this.#ppl[pos]._user_telusername : ' ندارد '} \n\
+            switch (msg.data) {
+                case 'start':
+                    return this.#bot.sendMessage(id, this.#tl.translate('Name?'), { ask: 'name' });
+                case 'En':
+                    {
+                        this.#tl.setLocale('en');
+                        return this.#bot.sendMessage(id, this.#tl.translate('langChangedSuccess'));
+                    }
+                case 'Fa':
+                    {
+                        this.#tl.setLocale('fa');
+                        return this.#bot.sendMessage(id, this.#tl.translate('langChangedSuccess'));
+                    }
+                case 'Ar':
+                    {
+                        this.#tl.setLocale('ar');
+                        return this.#bot.sendMessage(id, this.#tl.translate('langChangedSuccess'));
+                    }
+                case 'done':
+                    //ارسال داده ی نهایی برای ادمین
+                    {
+                        let pos = this.#ppl.findIndex(x => x._id == id);
+                        this.#bot.sendMessage(this.#adminID, `\
+                        TelegramID: @${typeof this.#ppl[pos]._user_telusername != 'undefined' ? this.#ppl[pos]._user_telusername : ' ندارد '} \n\
                 Name:    ${this.#ppl[pos]._name} \n\
                 Country:    ${this.#ppl[pos]._country} \n\
                 Number:    ${this.#ppl[pos]._number} \n\
                 Work Field:    ${this.#ppl[pos]._field} \n\
                 Question:    ${this.#ppl[pos]._question}`);
 
+                        return this.#bot.sendMessage(id, this.#tl.translate('FinalGreeting'));
+                    }
+                default:
+                    return this.#bot.sendMessage(id, 'Something went Wrong! Please Report. Thanks');
             }
         });
         //#endregion
 
+        //#region Bot Ask routine
         this.#bot.on('ask.name', msg => {
             if (this.IsIt_A_command(msg.text)) return;
 
@@ -128,7 +164,7 @@ class _bot {
             return this.#bot.sendMessage(id, this.#tl.translate('Finish'), { replyMarkup });
 
         });
-
+        //#endregion
     }
     // if used command in middle of conversation, we need to know
     IsIt_A_command(txt) {

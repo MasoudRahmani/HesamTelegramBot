@@ -1,0 +1,19 @@
+{
+    "Welcome": "Greetings.\r\nPlease answer some quick question, if you are ready press start.\r\nAfter you are done, our collegues will reach to you as soon as possible.\r\nSincerely yours.",
+    "Name?": "First and last name?",
+    "Country?": "Welcome Mr/Mrs. {name}. Current country of residence?",
+    "Number?": "Please enter you phone number without leading 0.",
+    "WrongNumeber": "Wrong Number, Please try again!",
+    "Question?": "Please enter your question.",
+    "Finish": "If you are sure please press Finish button.\n If not sure, please start again.",
+    "endButtonText": "Finish",
+    "startButtonText": "Start",
+    "Work?": "What is your occupation?",
+    "Help": "Use Menu and choose /start, you can write or click on /start to start the process.\nAfter finishing the process, your question will be sent to our staff and we will contact you as soon as possible.",
+    "Lang": "Please choose your language.",
+    "En": "English",
+    "Fa": "Persian | فارسی",
+    "Ar": "Arabic | العربية",
+    "langChangedSuccess": "Language Changed Succesfuly.",
+    "FinalGreeting": "Thank you. Your question is sent."
+}
